@@ -1,0 +1,12 @@
+Random irregular rock objects, prepared via displacement mapping
+in Blender, then decimated and atlased.  
+
+All the chips share an atlas, to avoid texture swaps. 
+
+The prefabs come in with a RigidBody so the chips/lumps act as 
+independent objects.  The collider is a mesh by default, 
+so if you want them to interact with the ground you'll need to turn
+off the mesh collider and turn on the (much worse fitting)
+sphere / box colliders. 
+
+	- Dr. Orion Lawlor, lawlor@alaska.edu, 2021 (Public Domain)
