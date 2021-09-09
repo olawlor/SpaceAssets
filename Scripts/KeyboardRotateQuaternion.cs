@@ -27,8 +27,8 @@ public class KeyboardRotateQuaternion : MonoBehaviour
         Vector3 angles=new Vector3(0,0,0);
         
         // pitch (nose up and down)
-        if (Input.GetKey(KeyCode.W)) angles.z += rate*dt;
-        if (Input.GetKey(KeyCode.S)) angles.z -= rate*dt;
+        if (Input.GetKey(KeyCode.W)) angles.z -= rate*dt;
+        if (Input.GetKey(KeyCode.S)) angles.z += rate*dt;
         
         // yaw (nose left and right)
         if (Input.GetKey(KeyCode.A)) angles.y -= rate*dt;
