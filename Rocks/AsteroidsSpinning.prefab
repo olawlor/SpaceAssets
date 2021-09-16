@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &604909269067224145
+--- !u!114 &47919078
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,13 +42,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3484650888910192348}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36aafcf003887c040a44c3f144fd90f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 77e28323b7d7589028477ed197422603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Torque: {x: 0, y: 0, z: 0}
-  AngularMomentum: {x: 0, y: 0.05, z: 0}
-  AngularVelocity: {x: 0, y: 0, z: 0}
---- !u!114 &604909268786256746
+  LaserHit: {x: 0, y: 0, z: 0}
+  LaserForce: {x: 0, y: 0, z: 0}
+  AngularMomentum: {x: 0, y: 0, z: 0}
+  AngularVelocity: {x: -0.05, y: 0, z: 0}
+--- !u!114 &354412499
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,13 +58,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3845765482869356450}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36aafcf003887c040a44c3f144fd90f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 77e28323b7d7589028477ed197422603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Torque: {x: 0, y: 0, z: 0}
-  AngularMomentum: {x: 0, y: 0.1, z: 0}
+  LaserHit: {x: 0, y: 0, z: 0}
+  LaserForce: {x: 0, y: 0, z: 0}
+  AngularMomentum: {x: 0, y: 0.2, z: 0}
   AngularVelocity: {x: 0, y: 0, z: 0}
---- !u!114 &604909268915583377
+--- !u!114 &1217099532
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,10 +74,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8439501738320503458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36aafcf003887c040a44c3f144fd90f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 77e28323b7d7589028477ed197422603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Torque: {x: 0, y: 0, z: 0}
+  LaserHit: {x: 0, y: 0, z: 0}
+  LaserForce: {x: 0, y: 0, z: 0}
   AngularMomentum: {x: 0, y: 0, z: 0.1}
   AngularVelocity: {x: 0, y: 0, z: 0}
 --- !u!1001 &604909267128662496
