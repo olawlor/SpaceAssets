@@ -4818,7 +4818,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fountainObject: {fileID: 0}
-  upVelocity: 5
+  upVelocity: 5.5
   habObject: {fileID: 0}
   spinVelocity: 10.47
   emissionRate: 20

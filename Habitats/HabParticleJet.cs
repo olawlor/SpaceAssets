@@ -46,6 +46,8 @@ public class HabParticleJet : MonoBehaviour
         // Emit a particle
         ParticleSystem.EmitParams settings = new ParticleSystem.EmitParams();
 
+        P -= Time.deltaTime*V; // <- seems needed to keep jet and particles aligned?
+        
         settings.position=P; // position relative to the particleSystem
         settings.velocity=V; // initial velocity
         
