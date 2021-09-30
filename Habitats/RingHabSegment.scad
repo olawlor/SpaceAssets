@@ -149,6 +149,9 @@ module fullHab()
 }
 
 //rotate([90,0,0]) living2D();
+//translate([0,0,30]) rotate([0,90,0]) circle(r=30);
+//rotate([90,0,0]) linear_extrude(height=30,center=true) living2D();
+//habShape2D() living2D();
 fullHab();
 
 

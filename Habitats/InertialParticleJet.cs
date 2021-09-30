@@ -1,11 +1,14 @@
 /*
   Emit particles in a jet, for spinning habitat
+  
+  The particle system lives in inertial coordinates,
+  so it picks up coriolis effects automatically.
 */
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HabParticleJet : MonoBehaviour
+public class InertialParticleJet : MonoBehaviour
 {
     public GameObject fountainObject; // where particles are flying from
     public float upVelocity = 5.0f; // upward initial velocity m/s
@@ -46,7 +49,7 @@ public class HabParticleJet : MonoBehaviour
         // Emit a particle
         ParticleSystem.EmitParams settings = new ParticleSystem.EmitParams();
 
-        P -= Time.deltaTime*V; // <- seems needed to keep jet and particles aligned?
+        P -= Time.deltaTime*V; // <- compensate for particle system applying velocity
         
         settings.position=P; // position relative to the particleSystem
         settings.velocity=V; // initial velocity
