@@ -44,8 +44,8 @@ Shader "Examples/UnlitExample"
                 f.uv = v.uv; // copy over texture coords
                 f.vertex = UnityObjectToClipPos(v.vertex);
                 
-                //f.normal = normalize(mul(float4(v.normal,0),unity_WorldToObject).xyz); //<- normal in world space
-                f.normal = v.normal; //<- normal in object space
+                f.normal = normalize(mul(float4(v.normal,0),unity_WorldToObject).xyz); //<- normal in world space
+                //f.normal = v.normal; //<- normal in object space
                 
                 return f;
             }
@@ -56,7 +56,31 @@ Shader "Examples/UnlitExample"
             // This is your fragment shader, which runs at each pixel.
             float4 frag (v2f f) : SV_Target
             {
-                float4 color = float4(0,1,0,1); //<- green (RGBA color channels)
+                float4 color = float4(0,0,0,1); // RGBA
+                
+                //color.rg = frac(f.vertex.xy/100.0f);
+                //color.b = frac(f.vertex.z*1000.0f);
+                
+                //if (f.vertex.y > 100.0f)
+                //    color = float4(0,0,1,1); // blue
+                
+                //color.rgb = f.normal;
+                
+                /*
+                // Example heavy calculation (lots of sin calls)
+                int counter=0;
+                float sum=0.0f;
+                for (counter=0;counter<1000;counter++)
+                    sum += sin(f.vertex.z*counter*f.normal.x);
+                
+                color.r = sum*0.001f;
+                */
+                
+                // Red and green from texture coordinates,
+                //  blue from surface normal:
+                color.rg = frac(f.uv.xy*2.0f);
+                color.b = frac(0.5+8.0f *_Lightness* f.normal.y*f.normal.x);
+                
                 
                 return color;
             }
@@ -64,4 +88,5 @@ Shader "Examples/UnlitExample"
         }
     }
 }
+
 
