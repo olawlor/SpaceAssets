@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DemoMaterial
+  m_Name: TextureDetail
   m_Shader: {fileID: 4800000, guid: 8b493e50080ded3838236dae042c9fe6, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -63,14 +63,14 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DetailScale: 64
-    - _DetailWeight: 0.6
+    - _DetailScale: 8.1
+    - _DetailWeight: 0.818
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Lightness: 1.42
-    - _MainScale: 8
+    - _MainScale: 1.01
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -82,7 +82,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.4811321, g: 0.4561677, b: 0.4561677, a: 1}
+    - _Color: {r: 0.5754717, g: 0.5181417, b: 0.48589355, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SliceScale: {r: 0, g: 4, b: 0, a: 0}
   m_BuildTextureStacks: []
