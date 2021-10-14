@@ -1,7 +1,7 @@
 /*
  Draw a volume rendered aurora borealis into a cube.
 */
-Shader "Examples/VolumeDemo"
+Shader "Examples/AuroraDemo"
 {
     Properties
     {

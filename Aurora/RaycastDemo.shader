@@ -70,7 +70,7 @@ Shader "Examples/RaycastDemo"
                 return 
                     color; // totaled up aurora intensity
                     //float4(rayStart,1); // ray start point
-                    //float4(frac(dir),1); // ray direction
+                    //float4(frac(rayDir),1); // ray direction
                     //float4(frac(vol),1);  // volume coordinates
                     //footprint+deposition;
             }
