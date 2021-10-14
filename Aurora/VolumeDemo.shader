@@ -1,5 +1,5 @@
 /*
- Draw a volume rendered aurora borealis into a cube.
+ Draw a volume rendered effect into a cube.
 */
 Shader "Examples/VolumeDemo"
 {
@@ -22,16 +22,21 @@ Shader "Examples/VolumeDemo"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            // make fog work
+            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
 
             struct appdata
             {
                 float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
             struct v2f
             {
+                float2 uv : TEXCOORD0;
+                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
                 float4 world : TEXCOORD1; 
             };
@@ -40,12 +45,15 @@ Shader "Examples/VolumeDemo"
             float4 _VolumeStart;
             sampler2D _Footprint;
             sampler2D _Vertical;
+            float4 _MainTex_ST;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.world = mul(unity_ObjectToWorld, v.vertex);
                 o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
             
@@ -64,30 +72,27 @@ Shader "Examples/VolumeDemo"
                 float3 rayDir = normalize(toCamera); // ray direction
                 
                 float4 sum=0.0;
-                float steps=512; //<- equal to resolution of footprint texture
+                float steps=256; // this many steps in volume
                 float stepsize=1.0/steps;
-                float limit=min(1.73f,length(toCamera)); // end of t loop (diagonal of cube, worst case)
-                
+                float limit=min(1.73f,length(toCamera)); // end of t loop
                 for (float t=0;t<limit;t+=stepsize) // step along the ray toward the camera
                 {
                     float3 vol=rayStart+t*rayDir; // where are we along the ray?
                     
-                    // look up the aurora here
-                    fixed4 footprint  = tex2Dlod(_Footprint, float4(vol.xz,0,0));
-                    fixed4 deposition = tex2Dlod(_Vertical, float4(0.9,vol.y,0,0));
-                    float4 aurora = footprint*deposition; 
-                    sum += aurora;
+                    float4 volumeColor = float4(0,0,0,0); // start black
+                    float r = length(vol-float3(0.5f,0.5f,0.5f));
+                    if (r<0.5) // if inside a sphere...
+                        volumeColor = float4(frac(vol*8.0f),0.0f); // plaid!
                     
-                    //if (max(max(vol.x,vol.y),vol.z)>1.0f) limit=0.0f; //<- exited cube + face
-                    //if (min(min(vol.x,vol.y),vol.z)<0.0f) limit=0.0f; //<- exited cube - face
+                    sum += volumeColor; 
+                    
                 }
-                
-                float exposure=40.0f*stepsize; //<- set camera exposure (t-relative)
+                float exposure=1.5f*stepsize; // scale colors back so they're visible
                 
                 return 
                     exposure*sum; // totaled up aurora intensity
                     //float4(rayStart,1); // ray start point
-                    //float4(frac(dir),1); // ray direction
+                    //float4(frac(rayDir),1); // ray direction
             }
             ENDCG
         }

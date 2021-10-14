@@ -1,7 +1,7 @@
 /*
- Draw a volume rendered aurora borealis into a cube.
+ Draw a simple raycast effect.
 */
-Shader "Examples/VolumeDemo"
+Shader "Examples/RaycastDemo"
 {
     Properties
     {
@@ -63,31 +63,16 @@ Shader "Examples/VolumeDemo"
                 float3 toCamera = cam - rayStart; // points toward camera
                 float3 rayDir = normalize(toCamera); // ray direction
                 
-                float4 sum=0.0;
-                float steps=512; //<- equal to resolution of footprint texture
-                float stepsize=1.0/steps;
-                float limit=min(1.73f,length(toCamera)); // end of t loop (diagonal of cube, worst case)
-                
-                for (float t=0;t<limit;t+=stepsize) // step along the ray toward the camera
-                {
-                    float3 vol=rayStart+t*rayDir; // where are we along the ray?
-                    
-                    // look up the aurora here
-                    fixed4 footprint  = tex2Dlod(_Footprint, float4(vol.xz,0,0));
-                    fixed4 deposition = tex2Dlod(_Vertical, float4(0.9,vol.y,0,0));
-                    float4 aurora = footprint*deposition; 
-                    sum += aurora;
-                    
-                    //if (max(max(vol.x,vol.y),vol.z)>1.0f) limit=0.0f; //<- exited cube + face
-                    //if (min(min(vol.x,vol.y),vol.z)<0.0f) limit=0.0f; //<- exited cube - face
-                }
-                
-                float exposure=40.0f*stepsize; //<- set camera exposure (t-relative)
+                float4 color=float4(0,0,0,1);
+                // Searchlight effect: are we looking down +Z direction?
+                if (rayDir.z<-0.99) color=float4(1,1,1,1);
                 
                 return 
-                    exposure*sum; // totaled up aurora intensity
+                    color; // totaled up aurora intensity
                     //float4(rayStart,1); // ray start point
                     //float4(frac(dir),1); // ray direction
+                    //float4(frac(vol),1);  // volume coordinates
+                    //footprint+deposition;
             }
             ENDCG
         }
