@@ -70,7 +70,7 @@ Shader "Examples/VolumeDemo"
                 
                 for (float t=0;t<limit;t+=stepsize) // step along the ray toward the camera
                 {
-                    float3 vol=rayStart+t*rayDir; // where are we along the ray?
+                    float3 vol=rayStart+t*rayDir; // where are we along the ray
                     
                     // look up the aurora here
                     fixed4 footprint  = tex2Dlod(_Footprint, float4(vol.xz,0,0));

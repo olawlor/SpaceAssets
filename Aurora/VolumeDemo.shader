@@ -77,7 +77,7 @@ Shader "Examples/VolumeDemo"
                 float limit=min(1.73f,length(toCamera)); // end of t loop
                 for (float t=0;t<limit;t+=stepsize) // step along the ray toward the camera
                 {
-                    float3 vol=rayStart+t*rayDir; // where are we along the ray?
+                    float3 vol=rayStart+t*rayDir; // where are we along the ray
                     
                     float4 volumeColor = float4(0,0,0,0); // start black
                     float r = length(vol-float3(0.5f,0.5f,0.5f));
