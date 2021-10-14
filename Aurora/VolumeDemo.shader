@@ -90,7 +90,7 @@ Shader "Examples/VolumeDemo"
                 float exposure=1.5f*stepsize; // scale colors back so they're visible
                 
                 return 
-                    exposure*sum; // totaled up aurora intensity
+                    exposure*sum; // totaled up volume intensity
                     //float4(rayStart,1); // ray start point
                     //float4(frac(rayDir),1); // ray direction
             }
