@@ -1,0 +1,36 @@
+NASA's Blue Marble Next Generation, part of the Visible Earth datasets.
+Collected and cleaned by Dr. Orion Lawlor 2021-10 (Public Domain).
+
+
+https://visibleearth.nasa.gov/collection/1484/blue-marble
+
+Albedo: This is the August Blue Marble Next Generation imagery:
+	https://visibleearth.nasa.gov/images/74117/august-blue-marble-next-generation
+
+Cloud: The cloud map on top, made by hand-combining the 8K and 21K images:
+	https://visibleearth.nasa.gov/images/57747/blue-marble-clouds
+
+wget https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57747/cloud_combined_8192.tif
+convert cloud_combined_8192.tif -quality 70 combinedCloud8K.jpg
+
+convert cloud.W.2001210.21600x21600.png cloud.E.2001210.21600x21600.png +append combined.jpg
+convert -geometry 16384x16384 -quality 70 combined.jpg combinedCloud16K.jpg
+
+
+Glow: The city lights map => emissivity
+	https://visibleearth.nasa.gov/images/55167/earths-city-lights
+
+Altitude: Topography => parallax and bump
+    https://visibleearth.nasa.gov/images/73934/topography
+
+Water: Bathymetry => water mask
+    https://visibleearth.nasa.gov/images/73963/bathymetry
+White is deep ocean water; gray is coastal/bog; black is dry inland.
+
+Some fixes from the Land/Water mask by Tom Patterson:
+http://www.shadedrelief.com/natural3/pages/extra.html
+
+
+
+This data is public domain.
+
