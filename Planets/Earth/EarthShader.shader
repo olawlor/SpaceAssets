@@ -10,11 +10,17 @@ Shader "SpaceAssets/EarthShader"
     {
         _Albedo ("Sphere Color", color) = (1,0,0,1)
         _SurfaceTexture ("Surface Texture", 2D) = "green" {}
+        _SurfaceAltitude ("Surface Altitude", 2D) = "black" {}
+        _SurfaceGlow ("Surface Glow from Cities", 2D) = "black" {}
+        glowColor ("Surface Glow Color", color) = (0.4,0.2,0.1,1)
         _SurfaceOcean ("Surface Ocean Mask", 2D) = "black" {}
+        _Clouds ("Clouds", 2D) = "white" {}
         _VolumeStart ("Origin of volume in world", vector) = (0,0,0,1)
         _VolumeScale ("Scale to volume coords", vector) = (1,1,1,1)
         _radius ("Sphere Radius", range(0,4)) = 1.0
         specularExponent ("Specular Exponent", range(0,400)) = 100.0
+        tilty ("Tilt for Bump Map", range(0,100)) = 1.0
+        cameraSensitivity ("Overall brightness", range(0,10)) = 1.0
         
     }
     SubShader
@@ -43,14 +49,20 @@ Shader "SpaceAssets/EarthShader"
             };
 
             sampler2D _SurfaceTexture;
+            sampler2D _SurfaceAltitude;
+            sampler2D _SurfaceGlow;
+            float4 glowColor;
+            
             sampler2D _SurfaceOcean;
+            sampler2D _Clouds;
             float3 _Albedo;
             float4 _VolumeScale;
             float4 _VolumeStart;
             float _radius;
             float specularExponent;
+            float tilty;
+            float cameraSensitivity;
             
-
             v2f vert (appdata v)
             {
                 v2f o;
@@ -117,26 +129,65 @@ Shader "SpaceAssets/EarthShader"
                 );
                 float4 textureColor = tex2D(_SurfaceTexture,texCoords);
                 float4 oceanMask = tex2D(_SurfaceOcean,texCoords);
+                float4 glow = glowColor * tex2D(_SurfaceGlow,texCoords);
                 
+                // "Bump map": tilt in height changes the surface normal.
+                //  Find this by looking at neighboring pixel heights.
+                float height=tex2D(_SurfaceAltitude,texCoords).r;
+                float2 del=float2(1.0/8192.0, 1.0/4096.0); // 1 pixel, in tex coords
+                float N=tex2D(_SurfaceAltitude,texCoords+float2(0,del.y)).r;
+                float tiltN=height-N; 
+                float E=tex2D(_SurfaceAltitude,texCoords+float2(del.x,0)).r;
+                float tiltE=height-E;
+                
+                const float km=1.0/6563.0; // 1/radius of earth, in km (1 = one Earth radius)
+                const float altitudeMax=8.85; // height of 1.0 in altitude map (km)
+                const float texturePixelSize=40075.0 / 8192.0; // size of pixel (km)
+                // Actual tilt = ratio of vertical change / horizontal change
+                float tiltUnits = altitudeMax/texturePixelSize;
+                
+                if (0) {
+                    // Draw bump map colors (for debug)
+                    textureColor.rgb=0.5+4*float3(tiltE,tiltN,0);
+                }
+                
+                // Apply tilt to the normal vector, in tangent space:
+                float3 east =  normalize(cross(hit,float3(0,1,0))); // on surface, facing east
+                float3 north = -normalize(cross(hit,east)); // on surface, facing north
+                float3 bumpedNormal=normal;
+                bumpedNormal+=east*tilty*tiltUnits*tiltE;
+                bumpedNormal+=north*tilty*tiltUnits*tiltN;
+                bumpedNormal=normalize(bumpedNormal);
+                
+                
+                // Load up the clouds
+                float2 cloudCoords = texCoords;
+                cloudCoords.x += -0.005*_Time;
+                    // *sin(6.28*cloudCoords.y); // <- trade winds?
+                float4 clouds = tex2D(_Clouds,cloudCoords);
+                
+                // Compute the lighting
                 float3 toLight = normalize(_WorldSpaceLightPos0.xyz);
-                float lighting = dot(normal,toLight);
+                float lighting = dot(bumpedNormal,toLight);
                 float specular=0.0;
-                if (lighting<0.0) lighting=0.0; // no negative light!
+                if (lighting<0.0) { lighting=0.0; } // no negative light!
                 else { // we are lit, try specular highlight
+                    glow=0; // <- no streetlights before dusk
+                
                     float3 toCamera=normalize(rayStart-hit);
                     float3 halfway = normalize((toCamera + toLight)/2);
-                    float specularDot = dot(halfway,normal);
+                    float specularDot = dot(halfway,normal); // <- sphere normal, *not* bumped!
                     if (specularDot>0 ) {
                     //if (specularDot>0.99) specular=1;
                         specular = oceanMask.r * pow(specularDot,specularExponent); // phong hightlight
                     }
                 }
-                lighting += 0.45; // ambient light
+                lighting += 0.05; // ambient light (low for a planet!)
                 
-                float3 color = lighting * _Albedo * textureColor + specular;
+                float3 color = lighting * (clouds + _Albedo * textureColor) + specular  + glow;
                 
                 return 
-                    float4(color,1);
+                    float4(cameraSensitivity*color,1);
                     //float4(frac(normal),1); // surface normal
                     //float4(frac(hit),1); // hit point
                     //float4(rayStart,1); // ray start point

@@ -19,6 +19,18 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Clouds:
+        m_Texture: {fileID: 2800000, guid: 2d3e68a491675fd8fad70d0d85344a92, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceAltitude:
+        m_Texture: {fileID: 2800000, guid: 2ccba3a43b0b13a4aa239e4140985c5d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceGlow:
+        m_Texture: {fileID: 2800000, guid: dcda14452ec52227c886e412eb15bfa2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SurfaceOcean:
         m_Texture: {fileID: 2800000, guid: 9eebd8376393823179f36714620e0f1b, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -29,9 +41,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _radius: 1
+    - cameraSensitivity: 0.9
     - specularExponent: 192
+    - tilty: 1
     m_Colors:
     - _Albedo: {r: 1, g: 1, b: 1, a: 1}
     - _VolumeScale: {r: 1, g: 1, b: 1, a: 1}
     - _VolumeStart: {r: 0, g: 0, b: 0, a: 1}
+    - glowColor: {r: 0.165, g: 0.108962275, b: 0.062264163, a: 1}
   m_BuildTextureStacks: []
