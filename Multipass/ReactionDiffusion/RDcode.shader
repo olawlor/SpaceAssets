@@ -71,19 +71,35 @@ Shader "SpaceAssets/RDcode"
                     return frac(scaled-0.001+_B);
                 }
                 else if (_SimType==1) 
-                { // tree growth and attack by fire or bugs
-                    float growing = 0.1*(0.01+_A);
+                { // tree growth and attack by fire
+                    float growing = 0.05*(0.01+_A);
                     me.g += growing;
                     
-                    if (me.g>=0.5 && area.r>0.1) // trees get attacked
-                    {
-                        me.g=0.0; // trees die
-                        me.r+=0.9*_C; // attacker gets way stronger
+                    if (me.g>0.9 && area.r>0.15) {
+                        me.g=0.0; // trees burn
+                        me.r=1.0; // fire hot!
                     }
                     me.r*=0.90; // otherwise attacker gets weaker
                     return me;
                 }
                 else if (_SimType==2) 
+                { // tree growth and attack by bugs
+                    float growing = me.g*(0.01+_A);
+                    
+                    float bugs = (me.r*0.9+area.r*0.1)/10.0;
+                    me.g += growing;
+                    me.g *=(1.0-5.0*bugs); // trees get eaten by bugs
+                    bugs*=4.0*me.g; // bugs survive by eating trees
+                    
+                    me.r=bugs*10.0;
+                    
+                    if (me.g>1.0) me.g=1.0;
+                    if (me.r>1.0) me.r=1.0;
+                    if (me.r<0.0) me.r=0.0;
+                    
+                    return me;
+                }
+                else if (_SimType==3) 
                 { // ice solidification (work in progress)
                     float cooling = 0.01+_A;
                     me.r -= cooling;
