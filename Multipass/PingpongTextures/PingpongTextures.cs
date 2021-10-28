@@ -10,6 +10,9 @@ using UnityEngine;
 
 public class PingpongTextures : MonoBehaviour
 {
+    public bool stop=false; // set to true to pause the camera
+    public bool singleStep=false; // set to true to render one frame and stop
+    
     public RenderTexture A; // texture to read from / render to
     public RenderTexture B; // another, or null and we will copy A at Start.
     
@@ -32,18 +35,24 @@ public class PingpongTextures : MonoBehaviour
         if (!A) return;
         if (!B) B=new RenderTexture(A); // make a copy of the A texture
         RenderSetup(A,B);
+        if (writeToCamera) writeToCamera.enabled=false; //<- meaning we call .Render
     }
    
     // Might want to use Camera.onPreRender here.
     //  See: https://docs.unity3d.com/ScriptReference/Camera-onPreRender.html
-    void Update()
+    public void FixedUpdate()
     {
         if (!A) return;
 
-        if (phase==false)
-            RenderSetup(A,B); // A -render-> B
-        else
-            RenderSetup(B,A); // B -render-> A
-        phase=!phase;
+        if (!stop || singleStep) {
+            if (phase==false)
+                RenderSetup(A,B); // A -render-> B
+            else
+                RenderSetup(B,A); // B -render-> A
+            phase=!phase;
+            
+            if (writeToCamera) writeToCamera.Render();
+        }
+        singleStep=false;
     }
 }
