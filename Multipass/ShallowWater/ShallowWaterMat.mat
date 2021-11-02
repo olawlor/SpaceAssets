@@ -26,12 +26,12 @@ Material:
     m_Floats:
     - _A: 0
     - _B: 0
-    - _BlurFactor: 0.2
+    - _BlurFactor: 0.4
     - _C: 1
     - _D: 2.5
     - _DiffuseLOD: 1.5
-    - _HeightFactor: 0.25
+    - _HeightFactor: 0.5
     - _SimType: 0
-    - _VelFactor: 0.25
+    - _VelFactor: 0.5
     m_Colors: []
   m_BuildTextureStacks: []
