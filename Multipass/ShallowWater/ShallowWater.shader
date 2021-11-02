@@ -77,9 +77,9 @@ Shader "SpaceAssets/ShallowWater"
                 
                 if (_SimType==0) 
                 { // Shallow Water wave equation
-                    N.x += _VelFactor*(R.z-L.z);
-                    N.y += _VelFactor*(T.z-B.z);
-                    N.z += _HeightFactor*(
+                    N.x += -_VelFactor*(R.z-L.z);
+                    N.y += -_VelFactor*(T.z-B.z);
+                    N.z += -_HeightFactor*(
                         +R.x-L.x
                         +T.y-B.y
                     );
