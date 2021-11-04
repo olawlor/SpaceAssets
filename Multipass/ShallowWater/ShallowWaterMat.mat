@@ -20,18 +20,19 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 8400000, guid: e3ee799b2b20f814da6670de3ab1ecf6, type: 2}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _A: 0
+    - _AdvectionSpeed: 1
     - _B: 0
-    - _BlurFactor: 0.4
+    - _BlurFactor: 0.7
     - _C: 1
     - _D: 2.5
     - _DiffuseLOD: 1.5
-    - _HeightFactor: 0.5
+    - _HeightFactor: 1
     - _SimType: 0
-    - _VelFactor: 0.5
+    - _VelFactor: 1
     m_Colors: []
   m_BuildTextureStacks: []
