@@ -25,14 +25,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _A: 0
-    - _AdvectionSpeed: 0
+    - _AdvectionSpeed: 0.75
     - _B: 0
-    - _BlurFactor: 0.7
+    - _BlurFactor: 0.73
     - _C: 1
     - _D: 2.5
     - _DiffuseLOD: 1.5
-    - _HeightFactor: 1
+    - _HeightFactor: 0.2
     - _SimType: 0
-    - _VelFactor: 1
+    - _VelFactor: 0.1
     m_Colors: []
   m_BuildTextureStacks: []
