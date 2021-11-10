@@ -34,7 +34,7 @@ Material:
     - _HeightFactor: 1
     - _PressureFactor: 1
     - _SimType: 0
-    - _VelFactor: 0.035
+    - _VelFactor: 0.03
     - _VelocityLOD: 0.3
     m_Colors: []
   m_BuildTextureStacks: []

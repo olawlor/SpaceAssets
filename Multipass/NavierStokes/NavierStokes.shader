@@ -7,7 +7,7 @@ Shader "SpaceAssets/NavierStokes"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _SimType ("Simulation Type",int) = 0
-        _VelFactor ("Velocity Factor",range(-1,1)) = 0.035
+        _VelFactor ("Velocity Factor",range(-1,1)) = 0.03
         _PressureFactor ("Pressure Factor",range(-1,1)) = 1.0
         _AdvectionSpeed ("Advection speed",range(0,3)) = 1
         _VelocityLOD ("Advection velocity LOD",range(0,2)) = 0.3
