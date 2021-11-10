@@ -1,5 +1,5 @@
 /*
- Shallow water wave equation simulation
+ Incompressible Navier-Stokes simulation
 */
 Shader "SpaceAssets/NavierStokes"
 {
@@ -7,11 +7,10 @@ Shader "SpaceAssets/NavierStokes"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _SimType ("Simulation Type",int) = 0
-        _VelFactor ("Velocity Factor",range(-1,5)) = 1
-        _HeightFactor ("Height Factor",range(-1,5)) = 1
-        _BlurFactor ("Blur Factor (for stability)",range(0,1)) = 0.7
+        _VelFactor ("Velocity Factor",range(-1,1)) = 0.035
+        _PressureFactor ("Pressure Factor",range(-1,1)) = 1.0
         _AdvectionSpeed ("Advection speed",range(0,3)) = 1
-        _DiffuseLOD ("Diffusion LOD",range(0,6)) = 1.5
+        _VelocityLOD ("Advection velocity LOD",range(0,2)) = 0.3
     }
     SubShader
     {
@@ -42,9 +41,9 @@ Shader "SpaceAssets/NavierStokes"
             float4 _MainTex_ST;
             
             float _SimType; // select code to run
-            float _VelFactor, _HeightFactor, _BlurFactor; // parameters for code
+            float _VelFactor, _PressureFactor; // parameters for code
             float _AdvectionSpeed;
-            float _DiffuseLOD; // diffusion amount
+            float _VelocityLOD; 
 
             v2f vert (appdata v)
             {
@@ -59,54 +58,71 @@ Shader "SpaceAssets/NavierStokes"
                 float4 middleGray=float4(0.5,0.5,0.5,0);
                 if (_Time.g<0.5f) 
                 { // Make a start value:
-                    if (i.uv.y<0.5) return float4(1,0.5,0.5,0); // red booking +x
-                    return middleGray; 
+                    float sign=(i.uv.y<0.5)?1.0:-1.0;
+                    float4 booking=float4(sign*0.5,0,0,0);
+                    return booking + middleGray; 
                 }
                 
                 float2 uv = i.uv;
                 
-                /*
-                  Neighboring pixels: Left, Right, Top, Bottom, Center
-                       T
-                    L  C  R
-                       B
-                */
-                float4 V = tex2D(_MainTex, uv) - middleGray;
+                float4 V = tex2Dlod(_MainTex, float4(uv,0,_VelocityLOD)) - middleGray;
                 
-                float4 N = float4(V.x,V.y,0,0); // New value for center pixel
-                float4 area;
-                for (float lod=9.0;lod>=0.0;lod-=1.0)
+                // Use our velocity to figure out where our value came from (upwind)
+                float2 pixelLOD0 = float2(1.0/512.0, 1.0/512.0); 
+                float4 upwind = float4(uv - pixelLOD0*_AdvectionSpeed*V.xy,0,0); 
+                float4 C = tex2Dlod(_MainTex, upwind) - middleGray; // my old value (Center)
+                
+                /*
+                  Loop over mipmap levels, and fix our velocity divergence at each one.
+                */
+                float4 N = float4(C.x,C.y,0,C.a); // New value for center pixel
+                for (float lod=8.0;lod>=0.0;lod-=1.0)
                 {
-                    float scale=pow(2,lod); // lod==0 -> 1 pixel, lod==3 -> 8 pixel
-                    float2 pixel = scale*float2(1.0/512.0, 1.0/512.0);
-                    float4 upwind = float4(uv - pixel*_AdvectionSpeed*V.xy,0,lod);  // upwind advection
-                    float4 C = tex2Dlod(_MainTex, upwind) - middleGray; // my old values (Center)
+                    /*
+                      Read neighboring pixels: Left, Right, Top, Bottom, Center
+                           T
+                        L  C  R
+                           B
+                    */
+                    float scale=pow(2,lod); // lod==0 -> 1 pixel, lod==3 -> 8 pixel, etc
+                    upwind.a=lod; // < the mipmap LOD we read
+                    float2 pixel = pixelLOD0*scale; //<- how far we move in the mipmap
                     float4 L = tex2Dlod(_MainTex, upwind + float4(-pixel.x,0,0,0)) - middleGray;
                     float4 R = tex2Dlod(_MainTex, upwind + float4(+pixel.x,0,0,0)) - middleGray;
                     float4 T = tex2Dlod(_MainTex, upwind + float4(0,+pixel.y,0,0)) - middleGray;
                     float4 B = tex2Dlod(_MainTex, upwind + float4(0,-pixel.y,0,0)) - middleGray;
                     
-                    N.x += -_VelFactor*(R.z-L.z);
-                    N.y += -_VelFactor*(T.z-B.z);
-                    N.z += -_HeightFactor*(
+                    N.x += -_VelFactor*(R.b-L.b);
+                    N.y += -_VelFactor*(T.b-B.b);
+                    N.b += -_PressureFactor*(
                         +R.x-L.x
                         +T.y-B.y
                     );
-                    
-                    area = 0.25f * (L+R+T+B); // nearby pixel average
                 }
                 
-                // lerp in area average (for stability)
-                N = _BlurFactor*area + (1.0-_BlurFactor)*N;
-                
-                // Boundary sphere:
-                float2 center=float2(0.5+0.3*sin(_Time.y),0.5);
-                if (length(uv-center)<0.05) {
-                    N.y+=0.01; // upward force
+                // Add a moving central sphere:
+                float2 center=float2(0.5+0.3*sin(_Time.y),0.5); // moving
+                float2 sphereUV=uv-center;
+                if (length(sphereUV)<0.05) {
+                    float sign=(sphereUV.x>0)?+1.0:-1.0;
+                    N.y+=sign*0.01; // spinning force
                 }
                 
-                //return N + middleGray; // write out raw color
-                return clamp(N + middleGray,0,1); // clamp the color
+                /*
+                // Drop in an occasional checkerboard
+                float occasional = sin(_Time.y);
+                if (occasional>0.99) {
+                    float2 checker=frac(uv*8)-float2(0.5,0.5);
+                    float sign=(checker.x*checker.y>0)?+1.0:-1.0;
+                    N.x+=sign*0.001;  // tracer lines
+                }
+                */
+                
+                // For long-term stability, dial back the velocities just a bit:
+                N.xy *= 0.9999;
+                
+                return N + middleGray; // write out raw color (can get huge)
+                //return clamp(N + middleGray,0,1); // clamp the color
             }
             ENDCG
         }
