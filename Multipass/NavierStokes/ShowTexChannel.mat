@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NavierStokesMat
-  m_Shader: {fileID: 4800000, guid: c0092cac94b690afbabeeba576e44a36, type: 3}
+  m_Name: ShowTexChannel
+  m_Shader: {fileID: 4800000, guid: d280b71f113e1ef4897ee2fb1b376b3f, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -24,20 +24,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _A: 0
-    - _AdvectionSpeed: 1
-    - _B: 0
-    - _BlurFactor: 0
-    - _BouyancyFactor: 0.001
-    - _C: 1
-    - _CoolingFactor: 0.002
-    - _D: 2.5
-    - _DiffuseLOD: 0.3
-    - _HeightFactor: 1
-    - _PressureFactor: 1
-    - _SharpenFactor: 0.05
-    - _SimType: 2
-    - _VelFactor: 0.03
-    - _VelocityLOD: 0.3
+    - _ColorBias: 0.05
+    - _ColorChannel: 2
+    - _ColorScale: 1.13
     m_Colors: []
   m_BuildTextureStacks: []
