@@ -97,6 +97,12 @@ Shader "SpaceAssets/FlowCombustion"
                         +T.y-B.y
                     );
                 }
+                
+                // Keep the overall average velocity near zero (avoids weird wind gusts)
+                float4 avg = tex2Dlod(_FlowTex, float4(0.5,0.5,0,100.0)) - middleGray;
+                float avgBlend=0.1;
+                N.xy -= avgBlend*avg;
+                
                 return N;
             }
 
