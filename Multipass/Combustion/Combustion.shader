@@ -12,12 +12,7 @@ Shader "SpaceAssets/Combustion"
         _AdvectionSpeed ("Advection speed (pixels/timestep)",range(0,3)) = 1
         _VelocityLOD ("Advection velocity LOD",range(0,2)) = 0.3
         
-        _VelFactor ("Pseudopressure to Velocity",range(-1,1)) = 0.03
-        _PressureFactor ("Pseudopressure from Velocity",range(-1,1)) = 1.0
-        
-        _BouyancyFactor ("Bouyancy Factor",range(-0.01,0.01)) = 0.001
-        _CoolingFactor ("Cooling Factor",range(-0.01,0.01)) = 0.002
-        _SharpenFactor ("Sharpening Factor",range(-0.1,0.1)) = 0.01
+        _CoolingFactor ("Cooling Factor",range(-0.01,0.01)) = 0.005
         
     }
     SubShader
@@ -88,9 +83,10 @@ Shader "SpaceAssets/Combustion"
                 if (_SimType==0)
                 { // run combustion physics!
                 
-                        float wide=0.1;
-                        if (i.uv.y<0.1 && i.uv.x>0.5-wide && i.uv.x<0.5+wide)
-                            return float4(1,1,0.1,0); // hot fuel
+                    // Inject hot fuel at the base
+                    float wide=0.05;
+                    if (i.uv.y<0.1 && i.uv.x>0.5-wide && i.uv.x<0.5+wide)
+                        return float4(1,1,0.1,0); // hot fuel
                 
                     // Fire triangle!
                     float burn = NC.r * NC.g * NC.b;
@@ -98,7 +94,7 @@ Shader "SpaceAssets/Combustion"
                     NC.b -= burn;
                     NC.r += 10.0*burn; // fire hot
                 
-                    NC.r *= 0.995; // lose heat (via radiative transfer?)
+                    NC.r *= (1.0-_CoolingFactor); // lose heat (via radiative transfer?)
                 }
                 
                 return NC; // write out raw color (can get huge)

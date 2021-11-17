@@ -264,7 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stop: 0
   singleStep: 0
-  substeps: 10
+  substeps: 6
   AF: {fileID: 8400000, guid: db06d62c1728932c4bb2b74797558037, type: 2}
   AC: {fileID: 8400000, guid: 6fb65effacd646e6eaa65e0687a9cc7b, type: 2}
   readMaterialF: {fileID: 2100000, guid: f0ca9ad5bf759d182901892bec9ae686, type: 2}

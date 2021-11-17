@@ -16,8 +16,6 @@ Shader "SpaceAssets/FlowCombustion"
         _PressureFactor ("Pseudopressure from Velocity",range(-1,1)) = 1.0
         
         _BouyancyFactor ("Bouyancy Factor",range(-0.01,0.01)) = 0.001
-        _CoolingFactor ("Cooling Factor",range(-0.01,0.01)) = 0.002
-        _SharpenFactor ("Sharpening Factor",range(-0.1,0.1)) = 0.01
         
     }
     SubShader
@@ -53,7 +51,7 @@ Shader "SpaceAssets/FlowCombustion"
             float _SimType; // select which code to run
             float _AdvectionSpeed,_VelocityLOD;  // advection parameters
             float _VelFactor, _PressureFactor; // pseudopressure parameters
-            float _BouyancyFactor, _CoolingFactor, _SharpenFactor; 
+            float _BouyancyFactor; 
             
 
             v2f vert (appdata v)
@@ -142,7 +140,7 @@ Shader "SpaceAssets/FlowCombustion"
                 */
                     float4 C=tex2D(_CombustionTex,uv);
                     N.b=C.r; // copy over from combustion texture
-                    N.y+=0.001*N.b; 
+                    N.y+=_BouyancyFactor*N.b; 
                     
                     if (uv.y<0.01 || uv.x>0.99) // bottom or right edge
                     {

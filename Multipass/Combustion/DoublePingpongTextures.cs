@@ -12,7 +12,7 @@ public class DoublePingpongTextures : MonoBehaviour
 {
     public bool stop=false; // set to true to pause the camera
     public bool singleStep=false; // set to true to render one frame and stop
-    public int substeps=10; // <- higher for more physics per timestep
+    public int substeps=2; // <- higher for more physics per timestep
     
     public RenderTexture AF; // texture to read from / render to
     RenderTexture BF; // we will copy A at Start.

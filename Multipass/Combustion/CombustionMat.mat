@@ -30,7 +30,7 @@ Material:
     m_Floats:
     - _AdvectionSpeed: 1
     - _BouyancyFactor: 0.001
-    - _CoolingFactor: 0.002
+    - _CoolingFactor: 0.005
     - _PressureFactor: 1
     - _SharpenFactor: 0.01
     - _SimType: 0
