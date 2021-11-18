@@ -65,7 +65,7 @@ Shader "SpaceAssets/Combustion"
                 float4 middleGrayFlow=float4(0.5,0.5,0.0,0);
                 if (_Time.g<0.2f) 
                 { // Make a start value:
-                    if (_SimType==0) { // combustion
+                    if (_SimType==0 || _SimType==1) { // combustion
                         
                         return float4(0,0,1,0); // oxygen
                     }
@@ -80,20 +80,34 @@ Shader "SpaceAssets/Combustion"
                 
                 float4 NC = tex2D(_CombustionTex,upwind);
                 
-                if (_SimType==0)
+                if (_SimType==0 || _SimType==1)
                 { // run combustion physics!
                 
                     // Inject hot fuel at the base
                     float wide=0.05;
-                    if (i.uv.y<0.1 && i.uv.x>0.5-wide && i.uv.x<0.5+wide)
-                        return float4(1,1,0.1,0); // hot fuel
+                    float left=0.5-wide;
+                    float right=0.5+wide;
+                    if (i.uv.y<0.1 && i.uv.x>left && i.uv.x<right)
+                    { // Emit hot fuel
+                        if (_SimType==0) 
+                            return float4(1,1,0.1,0); // hot fuel
+                        else
+                        {
+                            if (i.uv.y<0.02 && i.uv.x>right-0.002) 
+                                return float4(1,0,0,0); // tiny spark
+                            return float4(0,1,0,0); // not hot
+                        }
+                    }
                 
                     // Fire triangle!
-                    float burn = NC.r * NC.g * NC.b;
-                    NC.g -= burn;
-                    NC.b -= burn;
-                    NC.r += 10.0*burn; // fire hot
-                
+                    float activation=0.02; // minimum activation energy needed
+                    float burn = NC.r * NC.g * NC.b - activation;
+                    if (burn>0) {
+                        NC.g -= burn;
+                        NC.b -= burn;
+                        NC.r += 10.0*burn; // fire hot
+                    }
+                    
                     NC.r *= (1.0-_CoolingFactor); // lose heat (via radiative transfer?)
                 }
                 

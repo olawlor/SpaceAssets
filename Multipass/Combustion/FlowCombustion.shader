@@ -71,7 +71,7 @@ Shader "SpaceAssets/FlowCombustion"
                 /*
                   Loop over mipmap levels, and fix our velocity divergence at each one.
                 */
-                float4 N = float4(0,0,0,-divergenceTarget); // New value for center pixel
+                float4 N = float4(0,0,0,divergenceTarget); // New value for center pixel
                 for (float lod=8.0;lod>=0.0;lod-=1.0)
                 {
                     /*
@@ -109,6 +109,11 @@ Shader "SpaceAssets/FlowCombustion"
                 float4 middleGray=float4(0.5,0.5,0.0,0);
                 if (_Time.g<0.2f) 
                 { // Make a start value:
+                    if (_SimType==1) { // expanding flow
+                        if (length(i.uv-float2(0.5,0.5))<0.1)
+                            return float4(0,0,1,0)+middleGray;
+                        return middleGray;
+                    }
                     if (_SimType==0) { // shear flow
                         return middleGray;
                     }
@@ -122,11 +127,18 @@ Shader "SpaceAssets/FlowCombustion"
                 float4 upwind = float4(uv - pixelLOD0*_AdvectionSpeed*V.xy,0,0); 
                 float4 C = tex2Dlod(_FlowTex, upwind) - middleGray; // my old value (Center)
                 
+                float divergence=0;
+                if (_SimType==1)
+                { /* Expanding flow */
+                    divergence=0.1*C.b; //<- target expansion rate
+                }
+                
                 // Adjust velocities and pseudopressure at this pixel
-                float4 N=solvePseudopressure(0,upwind,pixelLOD0,middleGray);
+                float4 N=solvePseudopressure(divergence,upwind,pixelLOD0,middleGray);
                 N.xyz+=C.xyz; // inertia on velocity field
                 
-                if (_SimType==0)
+                
+                if (_SimType==0 || _SimType==1)
                 { /*
                 Combustion:
                     Flow: 
@@ -142,7 +154,7 @@ Shader "SpaceAssets/FlowCombustion"
                     N.b=C.r; // copy over from combustion texture
                     N.y+=_BouyancyFactor*N.b; 
                     
-                    if (uv.y<0.01 || uv.x>0.99) // bottom or right edge
+                    if (uv.y<0.01 || uv.x<0.01 || uv.x>0.99) // bottom or right edge
                     {
                         N.xy=0.0; // don't flow
                     }
