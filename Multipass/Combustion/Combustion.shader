@@ -94,15 +94,16 @@ Shader "SpaceAssets/Combustion"
                         else
                         {
                             if (i.uv.y<0.02 && i.uv.x>right-0.002) 
-                                return float4(1,0,0,0); // tiny spark
-                            return float4(0,1,0,0); // not hot
+                                return float4(1,1,0,0); // tiny spark
+                            return float4(0,1,0,0); // cold fuel
                         }
                     }
                 
                     // Fire triangle!
                     float activation=0.02; // minimum activation energy needed
                     float burn = NC.r * NC.g * NC.b - activation;
-                    if (burn>0) {
+                    if (burn>0) 
+                    {
                         NC.g -= burn;
                         NC.b -= burn;
                         NC.r += 10.0*burn; // fire hot
@@ -111,7 +112,8 @@ Shader "SpaceAssets/Combustion"
                     NC.r *= (1.0-_CoolingFactor); // lose heat (via radiative transfer?)
                 }
                 
-                return NC; // write out raw color (can get huge)
+                return NC;
+                //return clamp(NC,0,1); // write out raw color (can get huge)
             }
             ENDCG
         }

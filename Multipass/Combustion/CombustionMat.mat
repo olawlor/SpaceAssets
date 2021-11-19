@@ -33,7 +33,7 @@ Material:
     - _CoolingFactor: 0.005
     - _PressureFactor: 1
     - _SharpenFactor: 0.01
-    - _SimType: 0
+    - _SimType: 1
     - _VelFactor: 0.03
     - _VelocityLOD: 0.3
     m_Colors: []

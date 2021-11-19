@@ -16,6 +16,7 @@ Shader "SpaceAssets/FlowCombustion"
         _PressureFactor ("Pseudopressure from Velocity",range(-1,1)) = 1.0
         
         _BouyancyFactor ("Bouyancy Factor",range(-0.01,0.01)) = 0.001
+        _FireExpands ("Fire Expands",range(-1,1)) = 0.1
         
     }
     SubShader
@@ -51,7 +52,7 @@ Shader "SpaceAssets/FlowCombustion"
             float _SimType; // select which code to run
             float _AdvectionSpeed,_VelocityLOD;  // advection parameters
             float _VelFactor, _PressureFactor; // pseudopressure parameters
-            float _BouyancyFactor; 
+            float _BouyancyFactor, _FireExpands; 
             
 
             v2f vert (appdata v)
@@ -106,7 +107,7 @@ Shader "SpaceAssets/FlowCombustion"
 
             float4 frag (v2f i) : SV_Target
             {
-                float4 middleGray=float4(0.5,0.5,0.0,0);
+                float4 middleGray=float4(0.5,0.5,0.0,0.5);
                 if (_Time.g<0.2f) 
                 { // Make a start value:
                     if (_SimType==1) { // expanding flow
@@ -127,10 +128,10 @@ Shader "SpaceAssets/FlowCombustion"
                 float4 upwind = float4(uv - pixelLOD0*_AdvectionSpeed*V.xy,0,0); 
                 float4 C = tex2Dlod(_FlowTex, upwind) - middleGray; // my old value (Center)
                 
-                float divergence=0;
+                float divergence=0; //<- target expansion rate
                 if (_SimType==1)
-                { /* Expanding flow */
-                    divergence=0.1*C.b; //<- target expansion rate
+                {
+                    divergence=_FireExpands*C.b;
                 }
                 
                 // Adjust velocities and pseudopressure at this pixel
