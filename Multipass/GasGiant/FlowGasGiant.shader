@@ -135,13 +135,13 @@ Shader "SpaceAssets/FlowGasGiant"
                 if (_SimType==0) {
                     // Horizontal deep convection bands drive surface flow
                     float lat=(uv.y-0.5)*180; // degrees
-                    float stripes=4.5; // in 90 degrees of latitude, this many cycles
+                    float stripes=8.5; // in 90 degrees of latitude, this many cycles
                     float alternating=clamp(10.0*cos((lat*stripes/90.0)*3.1415),-1.0,+1.0);
                     float poles = abs(lat)/90.0; // 0 at equator, 1 at poles
-                    alternating *= 1.0-0.5*poles; // less at the poles
-                    //N.b=alternating;
-                    //N.x+=0.001*alternating;
-                    float targetX = 0.4*alternating;
+                    alternating *= 1.0-0.5*poles; // less motion at the poles -> less turbulence
+                    
+                    // Set the target velocity
+                    float targetX = 0.3*alternating;
                     float targetY = 0.0; 
                     
                     if (_Time.g<0.2f) 
@@ -151,7 +151,7 @@ Shader "SpaceAssets/FlowGasGiant"
                     
                     float blend = 0.001; //  fraction of deep convection velocity to blend in
                     N.x = blend*targetX + (1.0-blend)*N.x; 
-                    blend*=5.0; // Y is more strongly coupled to deep flow
+                    blend*=10.0; // Y is more strongly coupled to deep flow
                     N.y = blend*targetY + (1.0-blend)*N.y;
                     
                     if (_Time.g<3.0 && length(uv-float2(0.3,0.4))<0.01) N.xy=0.001; //<- break symmetry, tiny dot

@@ -32,9 +32,9 @@ Material:
     - _BouyancyFactor: 0.001
     - _CoolingFactor: 0.005
     - _PressureFactor: 1
-    - _SharpenFactor: 0.01
+    - _SharpenFactor: 0.03
     - _SimType: 0
     - _VelFactor: 0.03
-    - _VelocityLOD: 0.3
+    - _VelocityLOD: 0
     m_Colors: []
   m_BuildTextureStacks: []

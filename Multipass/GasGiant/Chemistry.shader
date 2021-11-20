@@ -12,7 +12,7 @@ Shader "SpaceAssets/GasGiantChemistry"
         _AdvectionSpeed ("Advection speed (pixels/timestep)",range(0,3)) = 1
         _VelocityLOD ("Advection velocity LOD",range(0,2)) = 0.3
         
-        _CoolingFactor ("Cooling Factor",range(-0.01,0.01)) = 0.005
+        _SharpenFactor ("Sharpening Factor",range(-0.1,0.1)) = 0.01
         
     }
     SubShader
@@ -43,12 +43,11 @@ Shader "SpaceAssets/GasGiantChemistry"
             sampler2D _FlowTex;
             sampler2D _CombustionTex;
             float4 _FlowTex_TexelSize; // magic Unity var, gives pixel size of texture
-           
+            float4 _CombustionTex_TexelSize; // magic Unity var, gives pixel size of texture
             
             float _SimType; // select which code to run
             float _AdvectionSpeed,_VelocityLOD;  // advection parameters
-            float _VelFactor, _PressureFactor; // pseudopressure parameters
-            float _BouyancyFactor, _CoolingFactor, _SharpenFactor; 
+            float _SharpenFactor; 
             
 
             v2f vert (appdata v)
@@ -74,7 +73,7 @@ Shader "SpaceAssets/GasGiantChemistry"
                         if (length(i.uv-float2(0.5,0.5))<0.2)
                             return float4(1,0,0,0); 
                         
-                        return float4(0,0,1,0); 
+                        return float4(0.9,0.7,0,0);  // yellow jupiter-y background
                     }
                 }
                 
@@ -87,21 +86,34 @@ Shader "SpaceAssets/GasGiantChemistry"
                 
                 float4 NC = tex2D(_CombustionTex,upwind);
                 
+                // Fight diffusion by sharpening just slightly
+                float2 pixel = _CombustionTex_TexelSize;
+                float4 L = tex2D(_CombustionTex,upwind+float2(-pixel.x,0));
+                float4 R = tex2D(_CombustionTex,upwind+float2(+pixel.x,0));
+                float4 B = tex2D(_CombustionTex,upwind+float2(0,-pixel.x));
+                float4 T = tex2D(_CombustionTex,upwind+float2(0,+pixel.x));
+                float4 neighborAverage = (L+R+T+B)*0.25;
+                NC = blend(NC,neighborAverage,-_SharpenFactor);
+                
                 /* Atomospheric chemistry!
                     red: red-brown tholins with long UV exposure
                     blue: happens near poles
                 */
                 float lat=(uv.y-0.5)*180; // degrees
-                float stripes=4.8; // in 90 degrees of latitude, this many cycles
+                float stripes=8.8; // in 90 degrees of latitude, this many cycles
                 float alternating=clamp(3.0*cos((lat*stripes/90.0)*3.1415),-1.0,+1.0);
+                
                 if (alternating>0.0) { // upwelling
-                    NC = blend(NC, float4(1,1,1,1), 0.001*alternating); // gets whiter near upwelling
+                    float4 upwellingColor=0.9*float4(1,1,1,1);
+                    NC = blend(NC, upwellingColor, 0.0005*alternating); // gets lighter near upwelling
                 }
                 
-                NC = blend(NC, float4(1,0,0,1), 0.0002); // aging in the sun
+                float4 tholinColor=float4(0.7,0.2,0.0,1.0);
+                NC = blend(NC, tholinColor, 0.0005); // aging red in the sun
                 
                 float poles = abs(lat)/90.0; // 0 at equator, 1 at poles
-                NC = blend(NC, float4(0,0.5,1,1), 0.001*poles); // cyan blue near poles
+                float4 poleColor = float4(0,0.5,1,1);
+                NC = blend(NC, poleColor, 0.0005*poles*poles); // cyan blue near poles
                 
                 
                 return NC;
